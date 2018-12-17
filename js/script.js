@@ -6,13 +6,18 @@ var query = 'Aliens'; //Utente può cambiare
 
 //dati interfaccia
 var wrapper = $('.wrapper-list');
-var input = $('#search').val();
-var submit = $('#input');
+var input = $('#search');
+var submit = $('#button-film');
 
 $(document).ready(function () {
-    var films = filmObject;
-    films.setData(apiKey, urlApi, language, query);
-    films.getData();
+
+    submit.click(function () {
+        query = input.val();
+        var films = filmObject;
+        films.setData(apiKey, urlApi, language, query);
+        films.getData();
+    });
+
 });
 
 //oggetto film
@@ -37,6 +42,7 @@ var filmObject = {
 
                 context['films'][i] = {
                     filmTitle: thisFilm.title,
+                    originalTitle: thisFilm.original_title,
                     filmYear: thisFilm.release_date,
                     filmLanguage: thisFilm.original_language,
                     filmVote: thisFilm.vote_average
