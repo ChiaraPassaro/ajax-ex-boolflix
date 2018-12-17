@@ -4,15 +4,17 @@ var urlApi = 'https://api.themoviedb.org/3/search/movie';
 var language = 'it';
 var query = 'Aliens'; //Utente può cambiare
 
-//dati interfaccia
-var wrapper = $('.wrapper-list');
-var input = $('#search');
-var submit = $('#button-film');
-
 $(document).ready(function () {
+
+    //dati interfaccia
+    var input = $('#search');
+    var submit = $('#button-film');
+    var selectL = $('#lang');
 
     submit.click(function () {
         query = input.val();
+        language = selectL.val();
+
         var films = filmObject;
         films.setData(apiKey, urlApi, language, query);
         films.getData();
@@ -24,10 +26,30 @@ $(document).ready(function () {
 var filmObject = {
     //funzione che stampa le card
     printData(data){
+            var thisObject = this;
+            var wrapper = $('.wrapper-list');
             var source   = $('#film__template').html();
             var template = Handlebars.compile(source);
 
             var filmsArray = data.results;
+
+
+            //array traduzione label
+            var labels = {
+                it: {
+                    'labelTitoloOriginale': 'Titolo originale',
+                    'labelAnnoUscita': 'Anno di Uscita',
+                    'labelLingua': 'Lingua',
+                    'labelVoto': 'Voto'
+                },
+                en: {
+                    'labelTitoloOriginale': 'Original Title',
+                    'labelAnnoUscita': 'Release Date',
+                    'labelLingua': 'Language',
+                    'labelVoto': 'Vote average'
+                }
+            };
+
 
             var context = {
                 querySearch : query,
@@ -38,16 +60,17 @@ var filmObject = {
 
             while (i < filmsArray.length){
                 var thisFilm = filmsArray[i];
-                console.log(i + ' ' + filmsArray);
-
                 context['films'][i] = {
+                    labelTitoloOriginale: labels[thisObject.language].labelTitoloOriginale,
+                    labelAnnoUscita:  labels[thisObject.language].labelAnnoUscita,
+                    labelLingua: labels[thisObject.language].labelLingua,
+                    labelVoto:  labels[thisObject.language].labelVoto,
                     filmTitle: thisFilm.title,
                     originalTitle: thisFilm.original_title,
                     filmYear: thisFilm.release_date,
                     filmLanguage: thisFilm.original_language,
                     filmVote: thisFilm.vote_average
                 };
-                console.log(context);
                 i++;
             }
 
