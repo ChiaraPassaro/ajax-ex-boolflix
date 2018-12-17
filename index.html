@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/style.css">
+  <title></title>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="select">
+      <input type="text" id="search" placeholder="Cerca un film" name="query">
+      <button type="submit" name="buttonfilm" id="button-film" class="btn">Cerca</button>
+    </div>
+    <div class="alert"></div>
+    <div class="wrapper-list"></div>
+  </div>
+
+  <script id="film__template" type="text/x-handlebars-template">
+    <div class="films__wrapper">
+      <header class="films__header">
+       <h1 class="film__search">{{querySearch}}</h1>
+      </header>
+      <main>
+        {{#each films}}
+          <div class="film__card">
+            <h2 class="film__title">{{filmTitle}}</h2>
+            <ul class="film__data">
+              <li class="film__original-title">{{originalTitle}}</li>
+              <li class="film__year">{{filmYear}}</li>
+              <li class="film__language">{{filmLanguage}}</li>
+              <li class="film__vote">{{filmVote}}</li>
+            </ul>
+          </div>
+        {{/each}}
+      </main>
+    </div>
+  </script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js" charset="utf-8"></script>
+  <script src="js/script.js" charset="utf-8"></script>
+</body>
+</html>
