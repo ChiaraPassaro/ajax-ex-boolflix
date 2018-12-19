@@ -10,10 +10,13 @@
   <div class="wrapper">
     <div class="select">
       <input type="text" id="search" placeholder="Cerca un film" name="query">
-      <select name="language" id="lang">
+      <div class="select__select">
+
+      </div>
+      <!-- <select name="language" id="lang">
         <option value="it">Italiano</option>
         <option value="en">English</option>
-      </select>
+      </select> -->
       <button type="submit" name="buttonfilm" id="button-film" class="btn">Cerca</button>
     </div>
     <div class="alert"></div>
@@ -49,6 +52,13 @@
     </div>
   </script>
 
+  <script id="select__template" type="text/x-handlebars-template">
+    <select name="languages" id="lang">
+      {{#each languages}}
+        <option value="{{codeLang}}">{{name}}</option>
+      {{/each}}
+    </select>
+  </script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js" charset="utf-8"></script>
