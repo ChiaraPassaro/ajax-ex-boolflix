@@ -24,6 +24,8 @@ $(document).ready(function () {
         e.preventDefault();
         $('.lang-link').removeClass('selected');
         $(this).addClass('selected');
+        var thisOption = $(this).html();
+        $('.language-selected').html(thisOption);
     });
 
     var submit = $('#button-film');

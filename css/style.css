@@ -12,3 +12,7 @@ body{
 .strong{
   font-weight: bold;
 }
+.btn-group .dropdown-menu{
+  max-height: 150px;
+  overflow-y: scroll;
+}
