@@ -4,7 +4,7 @@ var urlApi = 'https://api.themoviedb.org/3/search/movie';
 var urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages';
 var language = 'it';
 var query = 'Aliens'; //Utente può cambiare
-var bandierePermesse = ['it', 'en', 'es', 'be'];
+var lingueAmmesse = ['it', 'en', 'es'];
 
 $(document).ready(function () {
 
@@ -99,7 +99,7 @@ var filmObject = {
                     filmTitle: thisFilm.title,
                     originalTitle: thisFilm.original_title,
                     filmYear: thisFilm.release_date,
-                    filmLanguage: thisFilm.original_language,
+                    filmLanguage: getFlags(thisFilm.original_language),
                     stars: filmStar
                   };
                   i++;
@@ -107,7 +107,7 @@ var filmObject = {
 
             var html = thisObject.template(context);
             thisObject.wrapper.html(html);
-            getFlags(bandierePermesse);
+
     },
     //funzione a cui passare i dati
     setData(apiKey, urlApi, language, query){
@@ -162,69 +162,77 @@ var filmObject = {
 };
 
 
-
-
-// Funzione Bandiere - le sostituisco dopo aver creato le schede
-function getFlags(bandierePermesse){
-  var lingue = bandierePermesse;
-  var dataLenght = lingue.length;
-
-  var arrayFlag = {};
-  //contatore per while
-  var i = 0;
-  while(i <= dataLenght){
-    var thisLenght = dataLenght;
-
-    //creo oggetto immagine per contyrollare se carica l'immagine
-    var image = new Image();
-    image.src = 'https://www.countryflags.io/' + lingue[i] + '/flat/64.png';
-
-    i++;
-
-    //contattore per oggetto image
-    var j = 0;
-    image.onload = function() {
-      // immagine  caricata
-      //var thisUrlFlag = 'https://www.countryflags.io/' + lingue[j] + '/flat/64.png';
-      var thisUrlFlag = 'img/' + lingue[j] + '.png';
-
-      getThisFlag(thisUrlFlag, lingue[j], j, thisLenght);
-      j++;
-    };
-
-    image.onerror = function() {
-      // immagine non caricata
-      var thisUrlFlag = false;
-
-      getThisFlag(thisUrlFlag, lingue[j], j, thisLenght);
-      j++;
-    };
-
-  }
-
-  function getThisFlag(thisUrlFlag, codeLang, j, dataLength) {
-    //se è l'ultima lingua stampo
-    if(Object.keys(arrayFlag).length == dataLength){
-      return changeFlag(arrayFlag);
-    } else{
-      if(codeLang){
-        arrayFlag[codeLang] = thisUrlFlag;
-      }
+function getFlags(language) {
+    var flag = '';
+    if (lingueAmmesse.includes(language)) {
+      flag = '<img src="img/' + language + '.png">';
+    } else {
+      flag = language;
     }
-  }
-
+    return flag;
 }
 
-function changeFlag(arrayFlag){
-  var languageWrapper = $('.film__language .lang-flag');
-
-  var language = $('.film__language .lang-flag').html();
-
-  if(arrayFlag.hasOwnProperty(language)){
-    var flag = '<img src="'+ arrayFlag[language] +'">';
-    languageWrapper.html(flag);
-  }
-}
+// // Funzione Bandiere - le sostituisco dopo aver creato le schede
+// function getFlags(lingueAmmesse){
+//   var lingue = lingueAmmesse;
+//   var dataLenght = lingue.length;
+//
+//   var arrayFlag = {};
+//   //contatore per while
+//   var i = 0;
+//   while(i <= dataLenght){
+//     var thisLenght = dataLenght;
+//
+//     //creo oggetto immagine per contyrollare se carica l'immagine
+//     var image = new Image();
+//     image.src = 'https://www.countryflags.io/' + lingue[i] + '/flat/64.png';
+//
+//     i++;
+//
+//     //contattore per oggetto image
+//     var j = 0;
+//     image.onload = function() {
+//       // immagine  caricata
+//       //var thisUrlFlag = 'https://www.countryflags.io/' + lingue[j] + '/flat/64.png';
+//       var thisUrlFlag = 'img/' + lingue[j] + '.png';
+//
+//       getThisFlag(thisUrlFlag, lingue[j], j, thisLenght);
+//       j++;
+//     };
+//
+//     image.onerror = function() {
+//       // immagine non caricata
+//       var thisUrlFlag = false;
+//
+//       getThisFlag(thisUrlFlag, lingue[j], j, thisLenght);
+//       j++;
+//     };
+//
+//   }
+//
+//   function getThisFlag(thisUrlFlag, codeLang, j, dataLength) {
+//     //se è l'ultima lingua stampo
+//     if(Object.keys(arrayFlag).length == dataLength){
+//       return changeFlag(arrayFlag);
+//     } else{
+//       if(codeLang){
+//         arrayFlag[codeLang] = thisUrlFlag;
+//       }
+//     }
+//   }
+//
+// }
+//
+// function changeFlag(arrayFlag){
+//   var languageWrapper = $('.film__language .lang-flag');
+//
+//   var language = $('.film__language .lang-flag').html();
+//
+//   if(arrayFlag.hasOwnProperty(language)){
+//     var flag = '<img src="'+ arrayFlag[language] +'">';
+//     languageWrapper.html(flag);
+//   }
+// }
 
 
 //modificato oggetto select
@@ -276,7 +284,7 @@ var selectObject = {
                     console.log(arrayLanguages);
                     thisObject.printData(arrayLanguages);
                   } else{
-                    if (bandierePermesse.includes(result[i].iso_639_1)){
+                    if (lingueAmmesse.includes(result[i].iso_639_1)){
                       console.log(result[i].iso_639_1);
                       var thisUrlFlag = 'img/' + result[i].iso_639_1 + '.png';
                       arrayLanguages[i] = {
@@ -299,7 +307,6 @@ var selectObject = {
             }
         });
     }
-
 };
 
 
