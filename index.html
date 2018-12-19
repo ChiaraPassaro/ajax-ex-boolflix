@@ -65,23 +65,18 @@
       </button>
       <ul class="dropdown-menu">
         {{#each languages}}
-        <li id="li-{{codeLang}}"><a href="{{codeLang}}" class="lang-link"><img src="{{urlFlag}}" alt="{{name}}">{{name}}</a></li>
+        <li id="li-{{codeLang}}">
+          <a href="{{codeLang}}" class="lang-link">
+          {{#if urlFlag}}
+            <img src="{{urlFlag}}" alt="{{name}}">
+          {{/if}}
+          {{name}}
+          </a>
+        </li>
         {{/each}}
 
       </ul>
     </div>
-
-    <!--<select name="languages" id="lang" class="display-none">
-      {{#each languages}}
-      <option value="{{codeLang}}"><span>{{name}}</span></option>
-      {{/each}}
-    </select>
-      <ul class="select-flag">
-          {{#each languages}}
-          <span val="{{codeLang}}" id="li-{{codeLang}}"><img src="{{urlFlag}}" alt="{{name}}">{{name}}</span>
-          {{/each}}
-      </ul>
--->
 
   </script>
 

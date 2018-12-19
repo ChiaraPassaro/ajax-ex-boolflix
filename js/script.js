@@ -20,6 +20,8 @@ $(document).ready(function () {
     selectLanguage.setData(apiKey, urlApiLanguages);
     selectLanguage.getData();
 
+
+    //Click sulla select
     $(document).on('click', '.lang-link', function (e) {
         e.preventDefault();
         $('.lang-link').removeClass('selected');
@@ -28,6 +30,8 @@ $(document).ready(function () {
         $('.language-selected').html(thisOption);
     });
 
+
+    //click su submit
     var submit = $('#button-film');
     submit.click(function () {
 
@@ -63,7 +67,7 @@ var filmObject = {
             var thisObject = this;
             var labels = this.labels;
             var filmsArray = data.results;
-
+            console.log(data);
             var context = {
                 querySearch : query,
                 films: []
@@ -127,10 +131,10 @@ var filmObject = {
         };
         console.log(this.language);
         if(this.labels.hasOwnProperty(this.language)){
-          console.log('true');
+          //console.log('true');
           this.languageLabel = this.language;
         } else {
-          console.log('false');
+          //console.log('false');
           this.languageLabel = 'en';
         }
 
@@ -167,20 +171,19 @@ var selectObject = {
         thisObject.wrapper = wrapper;
         thisObject.source = sourceTemplate;
         thisObject.template = Handlebars.compile(thisObject.source);
+        thisObject.array = [];
     },
     //funzione che stampa le card
     printData(data){
             var thisObject = this;
+            var thisArray = data;
 
-            var array = data;
             var context = {
-                languages: array
+                languages: thisObject.array
             };
 
-            //console.log(context);
             var html = thisObject.template(context);
             thisObject.wrapper.html(html);
-
     },
     //funzione a cui passare i dati
     setData(apiKey, urlApi){
@@ -200,21 +203,60 @@ var selectObject = {
                 var result = data;
                 var dataLength = data.length;
                 var arrayLanguages = [];
-                var i = 1;
 
+                //contatore per while
+                var i = 0;
                 while(i < dataLength){
-                  arrayLanguages[i] = {
-                    name: data[i].english_name,
-                    codeLang: data[i].iso_639_1,
-                    urlFlag: 'https://www.countryflags.io/' + data[i].iso_639_1 + '/flat/64.png'
-                  };
+                    var image = new Image();
+                    image.src = 'https://www.countryflags.io/' + result[i].iso_639_1 + '/flat/64.png';
+
+                    //contattore per oggetto image
+                    var j = 0;
+                    image.onload = function() {
+                      // immagine  caricata
+                      var thisUrlFlag = 'https://www.countryflags.io/' + result[j].iso_639_1 + '/flat/64.png';
+
+                      var thisLanguage = {
+                          name: result[j].english_name,
+                          codeLang: result[j].iso_639_1,
+                          urlFlag: thisUrlFlag
+                      };
+
+                      getLanguage(thisLanguage, j, dataLength);
+                      j++;
+                    };
+
+                    image.onerror = function() {
+                      // immagine non caricata
+                      var thisLanguage = {
+                          name: result[j].english_name,
+                          codeLang: result[j].iso_639_1,
+                      };
+
+                      getLanguage(thisLanguage, j, dataLength);
+                      j++;
+                    };
+
+
                   i++;
                 }
-                return thisObject.printData(arrayLanguages);
+
+                function getLanguage(language, j, dataLength) {
+                  //se è l'ultima lingua stampo
+                  if(thisObject.array.length == dataLength - 1){
+                    console.log('fine');
+                    return thisObject.printData(arrayLanguages);
+                  } else{
+
+                    thisObject.array.push(language);
+                  }
+                }
+
             },
             error: function (err) {
                 console.log(err);
             }
         });
     }
+
 };
