@@ -2,7 +2,13 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
   <link rel="stylesheet" href="css/style.css">
   <title></title>
 </head>
@@ -53,14 +59,37 @@
   </script>
 
   <script id="select__template" type="text/x-handlebars-template">
-    <select name="languages" id="lang">
+    <div class="btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Select Language <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        {{#each languages}}
+        <li id="li-{{codeLang}}"><a href="{{codeLang}}" class="lang-link"><img src="{{urlFlag}}" alt="{{name}}">{{name}}</a></li>
+        {{/each}}
+
+      </ul>
+    </div>
+
+    <!--<select name="languages" id="lang" class="display-none">
       {{#each languages}}
-        <option value="{{codeLang}}">{{name}}</option>
+      <option value="{{codeLang}}"><span>{{name}}</span></option>
       {{/each}}
     </select>
+      <ul class="select-flag">
+          {{#each languages}}
+          <span val="{{codeLang}}" id="li-{{codeLang}}"><img src="{{urlFlag}}" alt="{{name}}">{{name}}</span>
+          {{/each}}
+      </ul>
+-->
+
   </script>
 
+
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js" charset="utf-8"></script>
   <script src="js/script.js" charset="utf-8"></script>
 </body>

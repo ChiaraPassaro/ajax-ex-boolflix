@@ -20,16 +20,21 @@ $(document).ready(function () {
     selectLanguage.setData(apiKey, urlApiLanguages);
     selectLanguage.getData();
 
+    $(document).on('click', '.lang-link', function (e) {
+        e.preventDefault();
+        $('.lang-link').removeClass('selected');
+        $(this).addClass('selected');
+    });
 
     var submit = $('#button-film');
     submit.click(function () {
 
         //dati da utente
         var input = $('#search');
-        var selectL = $('#lang');
+        var selectL = $('.lang-link.selected');
 
         query = input.val();
-        language = selectL.val();
+        language = selectL.attr('href');
         console.log(language);
         var films = filmObject;
         films.setTemplate(wrapper, source);
@@ -37,6 +42,7 @@ $(document).ready(function () {
         films.getData();
 
     });
+
 
 
 });
@@ -192,12 +198,13 @@ var selectObject = {
                 var result = data;
                 var dataLength = data.length;
                 var arrayLanguages = [];
-                var i = 0;
+                var i = 1;
 
                 while(i < dataLength){
                   arrayLanguages[i] = {
                     name: data[i].english_name,
-                    codeLang: data[i].iso_639_1
+                    codeLang: data[i].iso_639_1,
+                    urlFlag: 'https://www.countryflags.io/' + data[i].iso_639_1 + '/flat/64.png'
                   };
                   i++;
                 }
