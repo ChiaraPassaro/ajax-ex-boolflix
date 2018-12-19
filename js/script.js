@@ -4,6 +4,7 @@ var urlApi = 'https://api.themoviedb.org/3/search/movie';
 var urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages';
 var language = 'it';
 var query = 'Aliens'; //Utente può cambiare
+var bandierePermesse = ['it', 'gb', 'es', 'be'];
 
 $(document).ready(function () {
 
@@ -41,12 +42,10 @@ $(document).ready(function () {
 
         query = input.val();
         language = selectL.attr('href');
-        console.log(language);
         var films = filmObject;
         films.setTemplate(wrapper, source);
         films.setData(apiKey, urlApi, language, query);
         films.getData();
-
     });
 
 
@@ -67,7 +66,7 @@ var filmObject = {
             var thisObject = this;
             var labels = this.labels;
             var filmsArray = data.results;
-            console.log(data);
+
             var context = {
                 querySearch : query,
                 films: []
@@ -92,7 +91,7 @@ var filmObject = {
                     }
                 }
 
-                context['films'][i] = {
+                  context['films'][i] = {
                     labelTitoloOriginale: labels[thisObject.languageLabel].labelTitoloOriginale,
                     labelAnnoUscita:  labels[thisObject.languageLabel].labelAnnoUscita,
                     labelLingua: labels[thisObject.languageLabel].labelLingua,
@@ -102,12 +101,13 @@ var filmObject = {
                     filmYear: thisFilm.release_date,
                     filmLanguage: thisFilm.original_language,
                     stars: filmStar
-                };
-                i++;
+                  };
+                  i++;
             }
 
             var html = thisObject.template(context);
             thisObject.wrapper.html(html);
+            getFlags(bandierePermesse);
     },
     //funzione a cui passare i dati
     setData(apiKey, urlApi, language, query){
@@ -129,7 +129,8 @@ var filmObject = {
                 'labelVoto': 'Vote average'
             }
         };
-        console.log(this.language);
+
+
         if(this.labels.hasOwnProperty(this.language)){
           //console.log('true');
           this.languageLabel = this.language;
@@ -207,6 +208,8 @@ var selectObject = {
                 //contatore per while
                 var i = 0;
                 while(i < dataLength){
+
+                    //creo oggetto immagine per contyrollare se carica l'immagine
                     var image = new Image();
                     image.src = 'https://www.countryflags.io/' + result[i].iso_639_1 + '/flat/64.png';
 
@@ -237,17 +240,14 @@ var selectObject = {
                       j++;
                     };
 
-
                   i++;
                 }
 
                 function getLanguage(language, j, dataLength) {
                   //se è l'ultima lingua stampo
-                  if(thisObject.array.length == dataLength - 1){
-                    console.log('fine');
+                  if(thisObject.array.length == dataLength - 1 ){
                     return thisObject.printData(arrayLanguages);
                   } else{
-
                     thisObject.array.push(language);
                   }
                 }
@@ -260,3 +260,64 @@ var selectObject = {
     }
 
 };
+
+// Funzione Bandiere - le sostituisco dopo aver creato le schede
+function getFlags(bandierePermesse){
+  var lingue = bandierePermesse;
+  var dataLenght = lingue.length;
+
+  var arrayFlag = {};
+  //contatore per while
+  var i = 0;
+  while(i <= dataLenght){
+    var thisLenght = dataLenght;
+
+    //creo oggetto immagine per contyrollare se carica l'immagine
+    var image = new Image();
+    image.src = 'https://www.countryflags.io/' + lingue[i] + '/flat/64.png';
+
+    i++;
+
+    //contattore per oggetto image
+    var j = 0;
+    image.onload = function() {
+      // immagine  caricata
+      var thisUrlFlag = 'https://www.countryflags.io/' + lingue[j] + '/flat/64.png';
+
+      getThisFlag(thisUrlFlag, lingue[j], j, thisLenght);
+      j++;
+    };
+
+    image.onerror = function() {
+      // immagine non caricata
+      var thisUrlFlag = false;
+
+      getThisFlag(thisUrlFlag, lingue[j], j, thisLenght);
+      j++;
+    };
+
+  }
+
+  function getThisFlag(thisUrlFlag, codeLang, j, dataLength) {
+    //se è l'ultima lingua stampo
+    if(Object.keys(arrayFlag).length == dataLength){
+      return changeFlag(arrayFlag);
+    } else{
+      if(codeLang){
+        arrayFlag[codeLang] = thisUrlFlag;
+      }
+    }
+  }
+
+}
+
+function changeFlag(arrayFlag){
+  var languageWrapper = $('.film__language .lang-flag');
+
+  var language = $('.film__language .lang-flag').html();
+
+  if(arrayFlag.hasOwnProperty(language)){
+    var flag = '<img src="'+ arrayFlag[language] +'">';
+    languageWrapper.html(flag);
+  }
+}
