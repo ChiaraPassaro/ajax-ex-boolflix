@@ -40,10 +40,6 @@
             <div class="film__info">
               <h2 class="film__title">{{filmTitle}}</h2>
               <ul class="film__data">
-                <li class="film__overview">{{filmOverview}}</li>
-                <li class="film__original-title"><span class="strong">{{labelTitoloOriginale}}:</span> {{originalTitle}}</li>
-                <li class="film__year"><span class="strong">{{labelAnnoUscita}}</span> {{filmYear}}</li>
-                <li class="film__language"><span class="strong">{{labelLingua}}:</span><br><span class="lang-flag">{{{filmLanguage}}}</span></li>
                 <li class="film__vote"><span class="strong">{{labelVoto}}:</span>
                   {{#each stars}}
                   {{#if star}}
@@ -53,6 +49,10 @@
                   {{/if}}
                   {{/each}}
                 </li>
+                <li class="film__overview">{{filmOverview}}</li>
+                <li class="film__original-title"><span class="strong">{{labelTitoloOriginale}}:</span> {{originalTitle}}</li>
+                <li class="film__year"><span class="strong">{{labelAnnoUscita}}</span> {{filmYear}}</li>
+                <li class="film__language"><span class="strong">{{labelLingua}}:</span><br><span class="lang-flag">{{{filmLanguage}}}</span></li>
                 <li class="film__type"><span class="strong">{{labelType}}:</span> {{type}}</li>
               </ul>
             </div>
@@ -63,18 +63,21 @@
   <script id="film__details" type="text/x-handlebars-template">
     <div class="details__wrapper">
       <i class="far fa-times-circle details__close"></i>
+      <h1>{{title}}</h1>
       {{#if overview}}
       <h2>Trama</h2>
       <div class="details__overview">
         {{overview}}
       </div>
       {{/if}}
+      {{#if characters}}
       <h2>Cast</h2>
       <ul class="details__data details__data--characters">
         {{#each characters}}
         <li class="details__item"><span class="strong">{{actor}}</span> <span class="italic">as</span> {{character}}</li>
         {{/each}}
       </ul>
+      {{/if}}
       {{#if genres}}
       <h2>Generi</h2>
       <ul class="details__data details__data--genres">

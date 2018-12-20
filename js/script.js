@@ -4,7 +4,7 @@ var urlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themovie
 var urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages';
 var urlImg = 'https://image.tmdb.org/t/p/w342';
 var languageLabel = 'it';
-var query = 'Aliens'; //Utente può cambiare
+//var query = 'Aliens'; //Utente può cambiare
 var lingueAmmesse = ['it', 'en', 'es'];
 
 $(document).ready(function () {
@@ -26,7 +26,9 @@ $(document).ready(function () {
         //dati da utente
         query = input.val();
         getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate);
+        wrapper.html('');
         wrapperDetails.removeClass('active');
+
       }
     });
 
@@ -41,9 +43,20 @@ $(document).ready(function () {
       var id = $(this).attr('data-idCard');
       var type = $(this).attr('data-type');
       var position = $(this).position();
+
       $('html, body').animate({
         scrollTop: position.top
       }, 200, 'linear');
+
+      //aggiungere posizionamento fixed dopo animazione
+      
+      // $('html, body').animate({
+      //   scrollTop: position.top
+      // }, 2000, 'linear', function() {
+      //   wrapperDetails.css('position', 'fixed');
+      //   // Animation complete.
+      // });
+
       wrapperDetails.addClass('active');
       wrapperDetails.css('top', position.top);
       wrapperDetails.css('left', 0);
@@ -61,14 +74,9 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
       wrapper = wrapper,
       sourceTemplate = sourceTemplate;
 
-      // setto true per verificare se è la prima chiamata
-      var newQuery = true;
-
       for (var i = 0; i < urlApi.length; i++) {
         var count = i;
         var thisUrl = urlApi[i];
-
-      //  console.log(newQuery);
 
         $.ajax({
           url: thisUrl,
@@ -80,13 +88,17 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
           },
           success: function (data) {
             var result = data;
+            //controllo se sono state generate delle card
+            var listResult = $('.film__card').length;
+
+            //se il risultato è zero faccio chiamata per template
             if(result.total_results > 0){
-              printData(result, query, urlImg, languageLabel, wrapper, sourceTemplate, newQuery);
-            } else {
+              printData(result, query, urlImg, languageLabel, wrapper, sourceTemplate);
+            }
+            //se non ci sono risultati e non ci sono card mando errore
+            else if (result.total_results == 0 && listResult == 0){
               noResult(wrapper);
             }
-            //false dopo primo ciclo
-            newQuery = false;
           },
           error: function (err) {
             wrapper.html('Non ci sono risultati');
@@ -95,7 +107,7 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
       }
 }
 
-function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTemplate, newQuery){
+function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTemplate){
   var arrayApi = arrayApi,
       query = query,
       urlImg = urlImg,
@@ -182,12 +194,13 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
       }
 
       var html = template(context);
-      if(newQuery == true){
+
+      if($('.film__card').length == 0){
         wrapper.html(html);
       } else{
-        //aggiunge
         wrapper.append(html);
       }
+
 }
 
 //funzione che cerca bandiere
@@ -211,6 +224,7 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
   type = type,
   url = 'https://api.themoviedb.org/3/' + type + '/' + id,
   wrapper = wrapper;
+
   $.ajax({
     url: url,
     method : 'GET',
@@ -221,18 +235,20 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
     },
     success: function (data) {
       var result = data,
+          title = result.title,
           cast = result.credits.cast,
           castLength = result.credits.cast.length,
           overview = result.overview,
           genres = result.genres,
           maxCharacters = 5,
-
           array = {
+            title: title,
             overview: overview,
             genres: genres,
             characters: []
           };
 
+          console.log(cast);
       for (var i = 0; i < maxCharacters; i++) {
         if(i < castLength){
           var thisCharacter = cast[i].character;
