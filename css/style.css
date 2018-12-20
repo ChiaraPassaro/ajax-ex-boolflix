@@ -25,6 +25,8 @@ header{
 .logo{
   float: left;
   margin-top: 5px;
+  color: red;
+  text-transform: uppercase;
 }
 
 .search{
@@ -34,15 +36,6 @@ header{
 .search__input{
   line-height: 40px;
   width: 100%;
-}
-
-.logo{
-  color: red;
-  text-transform: uppercase;
-}
-.btn{
-  background: #fff;
-  color: #000
 }
 
 .films__wrapper{
@@ -61,7 +54,7 @@ header{
   width: 100%;
 }
 .film__poster img{
-  width: 100%;
+  width: 300px;
   display: block;
 }
 .film__title{
@@ -128,6 +121,9 @@ header{
   top: 0;
   right: 0;
   cursor: pointer;
+}
+.details__overview{
+  margin-bottom: 10px;
 }
 .details__data{
   list-style: none;

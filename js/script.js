@@ -223,16 +223,20 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
       var result = data;
       var cast = result.credits.cast;
       var castLength = result.credits.cast.length;
+      var overview = result.overview;
       var maxCharacters = 5;
-      arrayCharacter = [];
+      array = {
+        overview: overview,
+        characters: []
+      };
       for (var i = 0; i < maxCharacters; i++) {
         if(i < castLength){
           var thisCharacter = cast[i].character;
           var thisActor = cast[i].name;
-          arrayCharacter.push({character: thisCharacter, actor: thisActor});
+          array['characters'].push({character: thisCharacter, actor: thisActor});
         }
       }
-      printDetails(arrayCharacter, wrapper, sourceTemplate);
+      printDetails(array, wrapper, sourceTemplate);
     },
     error: function (err) {
       console.log(err);
@@ -248,9 +252,7 @@ function printDetails(array, wrapper, sourceTemplate){
       wrapper = wrapper,
       sourceTemplate = sourceTemplate,
       template = Handlebars.compile(sourceTemplate);
-      var context = {
-          characters : array
-      };
+      var context = array;
 
       var html = template(context);
 
