@@ -23,7 +23,7 @@
   <script id="film__template" type="text/x-handlebars-template">
     <div class="films__wrapper">
         {{#each films}}
-          <div class="film__card">
+          <div class="film__card" type="{{typeUrl}}" idCard="{{id}}">
             <div class="film__poster">
               {{#if filmPoster}}
                 <img src="{{filmPoster}}" alt="{{filmTitle}}">
@@ -37,6 +37,7 @@
             <div class="film__info">
               <h2 class="film__title">{{filmTitle}}</h2>
               <ul class="film__data">
+                <li class="film__overview">{{filmOverview}}</li>
                 <li class="film__original-title"><span class="strong">{{labelTitoloOriginale}}:</span> {{originalTitle}}</li>
                 <li class="film__year"><span class="strong">{{labelAnnoUscita}}</span> {{filmYear}}</li>
                 <li class="film__language"><span class="strong">{{labelLingua}}:</span><br><span class="lang-flag">{{{filmLanguage}}}</span></li>
@@ -52,6 +53,7 @@
                 <li class="film__type"><span class="strong">{{labelType}}:</span> {{type}}</li>
               </ul>
             </div>
+            <div class="film__details"></div>
           </div>
         {{/each}}
     </div>

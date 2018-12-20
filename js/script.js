@@ -31,6 +31,16 @@ $(document).ready(function () {
     $(document).on('mouseleave', '.film__card', function(){
       $(this).removeClass('active');
     });
+
+    $(document).on('click', '.film__card', function(){
+      var id = $(this).attr('idCard');
+      var type = $(this).attr('type');
+      var wrapperDetails = $(this).children('.film__details');
+      $('.film__details').removeClass('active');
+      wrapperDetails.addClass('active');
+      getDetails(apiKey, languageLabel, type, id, wrapperDetails);
+    });
+
   });
 
 function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate){
@@ -61,7 +71,6 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
           },
           success: function (data) {
             var result = data;
-            console.log(result.total_results);
             if(result.total_results > 0){
               printData(result, query, urlImg, languageLabel, wrapper, sourceTemplate, newQuery);
             } else {
@@ -69,7 +78,6 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
             }
             //false dopo primo ciclo
             newQuery = false;
-            console.log(newQuery);
           },
           error: function (err) {
             wrapper.html('Non ci sono risultati');
@@ -133,15 +141,16 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
             var originalTitle = thisFilm.original_title;
             var filmTitle = thisFilm.title;
             var type = 'film';
+            var typeUrl = 'movie'
           }
           if(thisFilm.original_name){
             var originalTitle = thisFilm.original_name;
             var filmTitle = thisFilm.name;
             var type = 'Tv Series';
+            var typeUrl = 'tv'
           }
           if (thisFilm.poster_path){
             var poster = urlImg + thisFilm.poster_path;
-            console.log(poster);
           }
             context['films'][i] = {
               labelTitoloOriginale: labels[languageLabel].labelTitoloOriginale,
@@ -150,12 +159,15 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
               labelVoto:  labels[languageLabel].labelVoto,
               labelType:  labels[languageLabel].labelType,
               filmTitle: filmTitle,
+              filmOverview: thisFilm.overview,
               originalTitle: originalTitle,
               filmYear: thisFilm.release_date,
               filmLanguage: getFlags(thisFilm.original_language),
               stars: filmStar,
               type: type,
-              filmPoster: poster
+              filmPoster: poster,
+              id: thisFilm.id,
+              typeUrl: typeUrl
             };
             i++;
       }
@@ -182,4 +194,38 @@ function getFlags(language) {
 
 function noResult(wrapper){
   wrapper.html('La ricerca non ha dato risultati');
+}
+
+function getDetails(apiKey, language, type, id, wrapper){
+  var apiKey = apiKey,
+  language = language,
+  type = type,
+  url = 'https://api.themoviedb.org/3/' + type + '/' + id,
+  wrapper = wrapper;
+
+  $.ajax({
+    url: url,
+    method : 'GET',
+    data: {
+      api_key: apiKey,
+      language: language,
+      append_to_response: 'credits'
+    },
+    success: function (data) {
+      var result = data;
+      var cast = result.credits.cast;
+      var castLength = result.credits.cast.length;
+      var maxCharacters = 5;
+      for (var i = 0; i < maxCharacters; i++) {
+        if(i < castLength){
+          console.log(cast[i].character + '<br>');
+        }
+      }
+    },
+    error: function (err) {
+      console.log('nessun risultato');
+      //wrapper.html('Non ci sono risultati');
+    }
+  });
+
 }

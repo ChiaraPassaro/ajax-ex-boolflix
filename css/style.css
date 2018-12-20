@@ -45,10 +45,9 @@ header{
   justify-content: space-around;
 }
 .film__card{
-  width: calc((100%-(20px*3)) / 5);
+  width: calc((100% - (20px * 3)) / 5);
   margin: 10px;
   position: relative;
-  overflow: hidden;
   font-size: 14px;
   cursor: pointer;
 }
@@ -88,6 +87,7 @@ header{
   top: 0;
   left: 0;
   z-index: 2;
+  overflow-y: auto;
   background: #000;
   color: #fff;
 }
@@ -96,4 +96,13 @@ header{
 }
 .film__card.active .film__info li{
   margin-bottom: 5px;
+}
+.film__details{
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+}
+.film__details.active{
+  display: block;
 }
