@@ -31,14 +31,15 @@
 
   <script id="film__template" type="text/x-handlebars-template">
     <div class="films__wrapper">
-      <header class="films__header">
-       <h1 class="film__search">Hai cercato: {{querySearch}}</h1>
-      </header>
+      
       <main>
         {{#each films}}
           <div class="film__card">
             <h2 class="film__title">{{filmTitle}}</h2>
             <ul class="film__data">
+              {{#if filmPoster}}
+                <li class="film__poster"><img src="{{filmPoster}}" alt="{{filmTitle}}"></li>
+              {{/if}}
               <li class="film__original-title"><span class="strong">{{labelTitoloOriginale}}:</span> {{originalTitle}}</li>
               <li class="film__year"><span class="strong">{{labelAnnoUscita}}</span> {{filmYear}}</li>
               <li class="film__language"><span class="strong">{{labelLingua}}:</span> <span class="lang-flag">{{{filmLanguage}}}</span></li>
@@ -52,7 +53,6 @@
                   {{/each}}
               </li>
               <li class="film__type"><span class="strong">{{labelType}}:</span> {{type}}</li>
-
             </ul>
           </div>
         {{/each}}

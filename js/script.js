@@ -2,6 +2,7 @@
 var apiKey = 'f45eed1b51907eec504d83c2a1f86cae';
 var urlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themoviedb.org/3/search/tv'];
 var urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages';
+var urlImg = 'https://image.tmdb.org/t/p/w185';
 var languageLabel = 'it';
 var query = 'Aliens'; //Utente può cambiare
 var lingueAmmesse = ['it', 'en', 'es'];
@@ -22,20 +23,21 @@ $(document).ready(function () {
 
         query = input.val();
 
-        getData(apiKey, urlApi, query, languageLabel, wrapper, sourceTemplate);
+        getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate);
 
     });
 
   });
 
-function getData(apiKey, urlApi, query, languageLabel, wrapper, sourceTemplate){
+function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate){
   var apiKey = apiKey,
       urlApi = urlApi,
       query = query,
-      wrapper = wrapper,
+      urlImg = urlImg,
       languageLabel = languageLabel,
+      wrapper = wrapper,
       sourceTemplate = sourceTemplate;
-      //console.log(urlApi.length);
+      console.log(urlImg);
 
       // setto true per verificare se è la prima chiamata
       var newQuery = true;
@@ -56,21 +58,27 @@ function getData(apiKey, urlApi, query, languageLabel, wrapper, sourceTemplate){
           },
           success: function (data) {
             var result = data;
-            printData(result, query, languageLabel, wrapper, sourceTemplate, newQuery);
+            console.log(result.total_results);
+            if(result.total_results > 0){
+              printData(result, query, urlImg, languageLabel, wrapper, sourceTemplate, newQuery);
+            } else {
+              noResult(wrapper);
+            }
             //false dopo primo ciclo
             newQuery = false;
             console.log(newQuery);
           },
           error: function (err) {
-            console.log(thisUrl);
-            console.log(err);
+            wrapper.html('Non ci sono risultati');
           }
         });
       }
 }
 
-function printData(arrayApi, query, languageLabel, wrapper, sourceTemplate, newQuery){
+function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTemplate, newQuery){
   var arrayApi = arrayApi,
+      query = query,
+      urlImg = urlImg,
       languageLabel = languageLabel,
       wrapper = wrapper,
       sourceTemplate   = sourceTemplate,
@@ -128,6 +136,10 @@ function printData(arrayApi, query, languageLabel, wrapper, sourceTemplate, newQ
             var filmTitle = thisFilm.name;
             var type = 'Tv Series';
           }
+          if (thisFilm.poster_path){
+            var poster = urlImg + thisFilm.poster_path;
+            console.log(poster);
+          }
             context['films'][i] = {
               labelTitoloOriginale: labels[languageLabel].labelTitoloOriginale,
               labelAnnoUscita:  labels[languageLabel].labelAnnoUscita,
@@ -139,7 +151,8 @@ function printData(arrayApi, query, languageLabel, wrapper, sourceTemplate, newQ
               filmYear: thisFilm.release_date,
               filmLanguage: getFlags(thisFilm.original_language),
               stars: filmStar,
-              type: type
+              type: type,
+              filmPoster: poster
             };
             i++;
       }
@@ -161,4 +174,8 @@ function getFlags(language) {
       flag = language;
     }
     return flag;
+}
+
+function noResult(wrapper){
+  wrapper.html('La ricerca non ha dato risultati');
 }
