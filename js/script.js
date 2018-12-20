@@ -1,12 +1,10 @@
 //Dati Api
 var apiKey = 'f45eed1b51907eec504d83c2a1f86cae';
-var urlApi = 'https://api.themoviedb.org/3/search/movie';
+var urlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themoviedb.org/3/search/tv'];
 var urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages';
 var languageLabel = 'it';
 var query = 'Aliens'; //Utente può cambiare
 var lingueAmmesse = ['it', 'en', 'es'];
-
-
 
 $(document).ready(function () {
 
@@ -24,37 +22,54 @@ $(document).ready(function () {
 
         query = input.val();
 
-        getFilms(apiKey, urlApi, query, languageLabel, wrapper, sourceTemplate);
+        getData(apiKey, urlApi, query, languageLabel, wrapper, sourceTemplate);
 
     });
 
   });
 
-function getFilms(apiKey, urlApi, query, languageLabel, wrapper, sourceTemplate){
+function getData(apiKey, urlApi, query, languageLabel, wrapper, sourceTemplate){
   var apiKey = apiKey,
       urlApi = urlApi,
       query = query,
       wrapper = wrapper,
       languageLabel = languageLabel,
       sourceTemplate = sourceTemplate;
+      //console.log(urlApi.length);
 
-  $.ajax({
-      url: urlApi,
-      data: {
-          api_key: apiKey,
-          query: query
-      },
-      success: function (data) {
-          var result = data;
-          return printData(result, query, languageLabel, wrapper, sourceTemplate);
-      },
-      error: function (err) {
-          console.log(err);
+      // setto true per verificare se è la prima chiamata
+      var newQuery = true;
+
+      for (var i = 0; i < urlApi.length; i++) {
+        var count = i;
+        var thisUrl = urlApi[i];
+
+        console.log(newQuery);
+
+        $.ajax({
+          url: thisUrl,
+          method : 'GET',
+          data: {
+            api_key: apiKey,
+            language: languageLabel,
+            query: query
+          },
+          success: function (data) {
+            var result = data;
+            printData(result, query, languageLabel, wrapper, sourceTemplate, newQuery);
+            //false dopo primo ciclo
+            newQuery = false;
+            console.log(newQuery);
+          },
+          error: function (err) {
+            console.log(thisUrl);
+            console.log(err);
+          }
+        });
       }
-  });
 }
 
-function printData(arrayApi, query, languageLabel, wrapper, sourceTemplate){
+function printData(arrayApi, query, languageLabel, wrapper, sourceTemplate, newQuery){
   var arrayApi = arrayApi,
       languageLabel = languageLabel,
       wrapper = wrapper,
@@ -65,13 +80,15 @@ function printData(arrayApi, query, languageLabel, wrapper, sourceTemplate){
               'labelTitoloOriginale': 'Titolo originale',
               'labelAnnoUscita': 'Anno di Uscita',
               'labelLingua': 'Lingua',
-              'labelVoto': 'Voto'
+              'labelVoto': 'Voto',
+              'labelType': 'Tipo'
           },
           en: {
               'labelTitoloOriginale': 'Original Title',
               'labelAnnoUscita': 'Release Date',
               'labelLingua': 'Language',
-              'labelVoto': 'Vote average'
+              'labelVoto': 'Vote average',
+              'labelType': 'Type'
           }
       };
 
@@ -101,22 +118,39 @@ function printData(arrayApi, query, languageLabel, wrapper, sourceTemplate){
               }
           }
 
+          if(thisFilm.original_title){
+            var originalTitle = thisFilm.original_title;
+            var filmTitle = thisFilm.title;
+            var type = 'film';
+          }
+          if(thisFilm.original_name){
+            var originalTitle = thisFilm.original_name;
+            var filmTitle = thisFilm.name;
+            var type = 'Tv Series';
+          }
             context['films'][i] = {
               labelTitoloOriginale: labels[languageLabel].labelTitoloOriginale,
               labelAnnoUscita:  labels[languageLabel].labelAnnoUscita,
               labelLingua: labels[languageLabel].labelLingua,
               labelVoto:  labels[languageLabel].labelVoto,
-              filmTitle: thisFilm.title,
-              originalTitle: thisFilm.original_title,
+              labelType:  labels[languageLabel].labelType,
+              filmTitle: filmTitle,
+              originalTitle: originalTitle,
               filmYear: thisFilm.release_date,
               filmLanguage: getFlags(thisFilm.original_language),
-              stars: filmStar
+              stars: filmStar,
+              type: type
             };
             i++;
       }
 
       var html = template(context);
-      wrapper.html(html);
+      if(newQuery == true){
+        wrapper.html(html);
+      } else{
+        //aggiunge
+        wrapper.append(html);
+      }
 }
 
 function getFlags(language) {
