@@ -4,6 +4,12 @@
   box-sizing: border-box;
 }
 
+.italic{
+  font-style: italic;
+}
+.strong{
+  font-weight: bold;
+}
 body{
   font-family: sans-serif;
   font-size: 20px;
@@ -45,9 +51,9 @@ header{
   justify-content: space-around;
 }
 .film__card{
-  width: calc((100% - (20px * 3)) / 5);
-  margin: 10px;
   position: relative;
+  margin: 10px;
+  background: #000;
   font-size: 14px;
   cursor: pointer;
 }
@@ -55,11 +61,8 @@ header{
   width: 100%;
 }
 .film__poster img{
-  height: 100%;
+  width: 100%;
   display: block;
-}
-.film__info{
-  display: none;
 }
 .film__title{
   margin-bottom: 10px;
@@ -77,6 +80,9 @@ header{
   background: red;
   text-transform: uppercase;
   text-align: right;
+}
+.film__info{
+  display: none;
 }
 .film__card.active .film__info{
   width: 100%;
@@ -98,11 +104,34 @@ header{
   margin-bottom: 5px;
 }
 .film__details{
-  position: absolute;
-  top: 0;
-  left: 0;
   display: none;
+  width: 100%;
+  height: 100%;
 }
 .film__details.active{
-  display: block;
+  position: absolute;
+  display: flex;
+  z-index: 3;
+  background: rgba(0,0,0, 0.9);
+}
+.details__wrapper{
+  padding: 10px;
+  position: relative;
+  width: 50%;
+  margin: auto;
+  background: #fff;
+  border: 3px solid red;
+}
+.details__close{
+  padding: 5px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+.details__data{
+  list-style: none;
+}
+.details__item{
+  margin: 5px 0;
 }

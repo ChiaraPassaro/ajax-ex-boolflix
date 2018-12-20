@@ -17,11 +17,14 @@
     </div>
     </header>
     <div class="alert"></div>
-    <div class="wrapper-list"></div>
+    <div class="wrapper-list">
+      <div class="film__details"></div>
+      <div class="films__wrapper">
+      </div>
+    </div>
   </div>
 
   <script id="film__template" type="text/x-handlebars-template">
-    <div class="films__wrapper">
         {{#each films}}
           <div class="film__card" type="{{typeUrl}}" idCard="{{id}}">
             <div class="film__poster">
@@ -53,13 +56,21 @@
                 <li class="film__type"><span class="strong">{{labelType}}:</span> {{type}}</li>
               </ul>
             </div>
-            <div class="film__details"></div>
           </div>
         {{/each}}
+
+  </script>
+  <script id="film__details" type="text/x-handlebars-template">
+    <div class="details__wrapper">
+      <i class="far fa-times-circle details__close"></i>
+      <h2>Cast</h2>
+      <ul class="details__data details__data--characters">
+        {{#each characters}}
+        <li class="details__item"><span class="strong">{{actor}}</span> <span class="italic">as</span> {{character}}</li>
+        {{/each}}
+      </ul>
     </div>
   </script>
-
-
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js" charset="utf-8"></script>

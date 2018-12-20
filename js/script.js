@@ -10,9 +10,13 @@ var lingueAmmesse = ['it', 'en', 'es'];
 $(document).ready(function () {
 
     //dati interfaccia
-    var wrapper = $('.wrapper-list');
+    var wrapper = $('.films__wrapper');
     var sourceTemplate = $('#film__template').html();
     var input = $('#search');
+
+    //dati interfaccia
+    var wrapperDetails = $('.film__details');
+    var sourceTemplateDetails = $('#film__details').html();
 
     //invio su input
     //var submit = $('#button-film');
@@ -22,6 +26,7 @@ $(document).ready(function () {
         //dati da utente
         query = input.val();
         getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate);
+        wrapperDetails.removeClass('active');
       }
     });
 
@@ -35,10 +40,14 @@ $(document).ready(function () {
     $(document).on('click', '.film__card', function(){
       var id = $(this).attr('idCard');
       var type = $(this).attr('type');
-      var wrapperDetails = $(this).children('.film__details');
-      $('.film__details').removeClass('active');
+      var position = $(this).position();
+      $('html, body').animate({
+        scrollTop: position.top
+      }, 200, 'linear');
       wrapperDetails.addClass('active');
-      getDetails(apiKey, languageLabel, type, id, wrapperDetails);
+      wrapperDetails.css('top', position.top);
+      wrapperDetails.css('left', 0);
+      getDetails(apiKey, languageLabel, type, id, wrapperDetails, sourceTemplateDetails);
     });
 
   });
@@ -59,7 +68,7 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
         var count = i;
         var thisUrl = urlApi[i];
 
-        console.log(newQuery);
+      //  console.log(newQuery);
 
         $.ajax({
           url: thisUrl,
@@ -196,13 +205,12 @@ function noResult(wrapper){
   wrapper.html('La ricerca non ha dato risultati');
 }
 
-function getDetails(apiKey, language, type, id, wrapper){
+function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
   var apiKey = apiKey,
   language = language,
   type = type,
   url = 'https://api.themoviedb.org/3/' + type + '/' + id,
   wrapper = wrapper;
-
   $.ajax({
     url: url,
     method : 'GET',
@@ -216,16 +224,45 @@ function getDetails(apiKey, language, type, id, wrapper){
       var cast = result.credits.cast;
       var castLength = result.credits.cast.length;
       var maxCharacters = 5;
+      arrayCharacter = [];
       for (var i = 0; i < maxCharacters; i++) {
         if(i < castLength){
-          console.log(cast[i].character + '<br>');
+          var thisCharacter = cast[i].character;
+          var thisActor = cast[i].name;
+          arrayCharacter.push({character: thisCharacter, actor: thisActor});
         }
       }
+      printDetails(arrayCharacter, wrapper, sourceTemplate);
     },
     error: function (err) {
-      console.log('nessun risultato');
-      //wrapper.html('Non ci sono risultati');
+      console.log(err);
+      var wrapperError = $('.alert');
+      wrapperError.html('Non ci sono risultati');
     }
   });
 
+}
+
+function printDetails(array, wrapper, sourceTemplate){
+  var array = array,
+      wrapper = wrapper,
+      sourceTemplate = sourceTemplate,
+      template = Handlebars.compile(sourceTemplate);
+      var context = {
+          characters : array
+      };
+
+      var html = template(context);
+
+      wrapper.html(html);
+      closeDetails(wrapper);
+}
+
+function closeDetails(wrapper){
+  var wrapper = wrapper,
+      closeBtn = wrapper.find('.details__close');
+
+  closeBtn.click(function(){
+    wrapper.removeClass('active');
+  });
 }
