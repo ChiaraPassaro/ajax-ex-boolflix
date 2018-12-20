@@ -38,8 +38,8 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.film__card', function(){
-      var id = $(this).attr('idCard');
-      var type = $(this).attr('type');
+      var id = $(this).attr('data-idCard');
+      var type = $(this).attr('data-type');
       var position = $(this).position();
       $('html, body').animate({
         scrollTop: position.top
@@ -220,15 +220,19 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
       append_to_response: 'credits'
     },
     success: function (data) {
-      var result = data;
-      var cast = result.credits.cast;
-      var castLength = result.credits.cast.length;
-      var overview = result.overview;
-      var maxCharacters = 5;
-      array = {
-        overview: overview,
-        characters: []
-      };
+      var result = data,
+          cast = result.credits.cast,
+          castLength = result.credits.cast.length,
+          overview = result.overview,
+          genres = result.genres,
+          maxCharacters = 5,
+
+          array = {
+            overview: overview,
+            genres: genres,
+            characters: []
+          };
+
       for (var i = 0; i < maxCharacters; i++) {
         if(i < castLength){
           var thisCharacter = cast[i].character;
