@@ -2,7 +2,7 @@
 var apiKey = 'f45eed1b51907eec504d83c2a1f86cae';
 var urlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themoviedb.org/3/search/tv'];
 var urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages';
-var urlImg = 'https://image.tmdb.org/t/p/w185';
+var urlImg = 'https://image.tmdb.org/t/p/w342';
 var languageLabel = 'it';
 var query = 'Aliens'; //Utente può cambiare
 var lingueAmmesse = ['it', 'en', 'es'];
@@ -12,21 +12,25 @@ $(document).ready(function () {
     //dati interfaccia
     var wrapper = $('.wrapper-list');
     var sourceTemplate = $('#film__template').html();
+    var input = $('#search');
 
-    //click su submit
-    var submit = $('#button-film');
-    submit.click(function () {
-
+    //invio su input
+    //var submit = $('#button-film');
+    //var selectL = $('.lang-link.selected');
+    $(document).keyup(function(e){
+      if(e.which == 13){
         //dati da utente
-        var input = $('#search');
-        var selectL = $('.lang-link.selected');
-
         query = input.val();
-
         getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate);
-
+      }
     });
 
+    $(document).on('mouseenter', '.film__card', function(){
+      $(this).addClass('active');
+    });
+    $(document).on('mouseleave', '.film__card', function(){
+      $(this).removeClass('active');
+    });
   });
 
 function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate){
@@ -37,7 +41,6 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
       languageLabel = languageLabel,
       wrapper = wrapper,
       sourceTemplate = sourceTemplate;
-      console.log(urlImg);
 
       // setto true per verificare se è la prima chiamata
       var newQuery = true;
@@ -87,14 +90,14 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
           it: {
               'labelTitoloOriginale': 'Titolo originale',
               'labelAnnoUscita': 'Anno di Uscita',
-              'labelLingua': 'Lingua',
+              'labelLingua': 'Lingua Originale',
               'labelVoto': 'Voto',
               'labelType': 'Tipo'
           },
           en: {
               'labelTitoloOriginale': 'Original Title',
               'labelAnnoUscita': 'Release Date',
-              'labelLingua': 'Language',
+              'labelLingua': 'Original Language',
               'labelVoto': 'Vote average',
               'labelType': 'Type'
           }
@@ -166,12 +169,13 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
       }
 }
 
+//funzione che cerca bandiere
 function getFlags(language) {
     var flag = '';
     if (lingueAmmesse.includes(language)) {
       flag = '<img src="img/' + language + '.png">';
     } else {
-      flag = language;
+      flag = language + ' Lingua non disponibile';
     }
     return flag;
 }

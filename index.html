@@ -2,90 +2,63 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-  <!-- Optional theme -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-  <!-- Latest compiled and minified JavaScript -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css">
   <title></title>
 </head>
 <body>
   <div class="wrapper">
-    <div class="select">
-      <input type="text" id="search" placeholder="Cerca un film" name="query">
-      <div class="select__select">
-
+    <header>
+      <div class="logo">
+        <h1>Boolfix</h1>
       </div>
-      <!-- <select name="language" id="lang">
-        <option value="it">Italiano</option>
-        <option value="en">English</option>
-      </select> -->
-      <button type="submit" name="buttonfilm" id="button-film" class="btn">Cerca</button>
+      <div class="search">
+        <input class="search__input" type="text" id="search" placeholder="Inserisci un titolo" name="query">
     </div>
+    </header>
     <div class="alert"></div>
     <div class="wrapper-list"></div>
   </div>
 
   <script id="film__template" type="text/x-handlebars-template">
     <div class="films__wrapper">
-      
-      <main>
         {{#each films}}
           <div class="film__card">
-            <h2 class="film__title">{{filmTitle}}</h2>
-            <ul class="film__data">
+            <div class="film__poster">
               {{#if filmPoster}}
-                <li class="film__poster"><img src="{{filmPoster}}" alt="{{filmTitle}}"></li>
+                <img src="{{filmPoster}}" alt="{{filmTitle}}">
+              {{else}}
+                <img src="img/poster-default.png" alt="{{filmTitle}}">
               {{/if}}
-              <li class="film__original-title"><span class="strong">{{labelTitoloOriginale}}:</span> {{originalTitle}}</li>
-              <li class="film__year"><span class="strong">{{labelAnnoUscita}}</span> {{filmYear}}</li>
-              <li class="film__language"><span class="strong">{{labelLingua}}:</span> <span class="lang-flag">{{{filmLanguage}}}</span></li>
-              <li class="film__vote"><span class="strong">{{labelVoto}}:</span>
+            </div>
+            <div class="film__overtype">
+              {{type}}
+            </div>
+            <div class="film__info">
+              <h2 class="film__title">{{filmTitle}}</h2>
+              <ul class="film__data">
+                <li class="film__original-title"><span class="strong">{{labelTitoloOriginale}}:</span> {{originalTitle}}</li>
+                <li class="film__year"><span class="strong">{{labelAnnoUscita}}</span> {{filmYear}}</li>
+                <li class="film__language"><span class="strong">{{labelLingua}}:</span><br><span class="lang-flag">{{{filmLanguage}}}</span></li>
+                <li class="film__vote"><span class="strong">{{labelVoto}}:</span>
                   {{#each stars}}
-                    {{#if star}}
-                      <i class="fas fa-star"></i>
-                    {{else}}
-                      <i class="far fa-star"></i>
-                    {{/if}}
+                  {{#if star}}
+                  <i class="fas fa-star"></i>
+                  {{else}}
+                  <i class="far fa-star"></i>
+                  {{/if}}
                   {{/each}}
-              </li>
-              <li class="film__type"><span class="strong">{{labelType}}:</span> {{type}}</li>
-            </ul>
+                </li>
+                <li class="film__type"><span class="strong">{{labelType}}:</span> {{type}}</li>
+              </ul>
+            </div>
           </div>
         {{/each}}
-      </main>
     </div>
   </script>
-
-  <script id="select__template" type="text/x-handlebars-template">
-    <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="language-selected">Select Language</span> <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        {{#each languages}}
-        <li id="li-{{codeLang}}">
-          <a href="{{codeLang}}" class="lang-link">
-          {{#if urlFlag}}
-            <img src="{{urlFlag}}" alt="{{name}}">
-          {{/if}}
-          {{name}}
-          </a>
-        </li>
-        {{/each}}
-
-      </ul>
-    </div>
-
-  </script>
-
 
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js" charset="utf-8"></script>
   <script src="js/script.js" charset="utf-8"></script>
