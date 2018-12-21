@@ -35,7 +35,26 @@ header{
 }
 .search__input{
   line-height: 40px;
-  width: 100%;
+  width: 70%;
+}
+#select-language{
+  height: 40px;
+  line-height: 40px;
+  background: #fff;
+  border: 0;
+}
+.alert{
+  display: none;
+  height: calc(100vh - 80px);
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  color: red;
+  font-size: 150%;
+  text-align: center;
+}
+.alert.active{
+  display: flex;
 }
 
 .films__wrapper{
@@ -47,7 +66,7 @@ header{
   position: relative;
   margin: 10px;
   background: #000;
-  font-size: 14px;
+  font-size: 80%;
   cursor: pointer;
 }
 .film__poster{
@@ -59,7 +78,7 @@ header{
 }
 .film__title{
   margin-bottom: 10px;
-  font-size: 20px;
+  font-size: 100%;
   text-transform: uppercase;
 }
 .film__overtype{

@@ -1,30 +1,39 @@
 //Dati Api
-var apiKey = 'f45eed1b51907eec504d83c2a1f86cae';
-var urlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themoviedb.org/3/search/tv'];
-var urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages';
-var urlImg = 'https://image.tmdb.org/t/p/w342';
-var languageLabel = 'it';
-//var query = 'Aliens'; //Utente può cambiare
-var lingueAmmesse = ['it', 'en', 'es'];
+var apiKey = 'f45eed1b51907eec504d83c2a1f86cae',
+    urlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themoviedb.org/3/search/tv'],
+    urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages',
+    urlImg = 'https://image.tmdb.org/t/p/w342',
+    languageLabel = 'it', //lingua base interfaccia
+    lingueAmmesse = ['it', 'en', 'es']; // per le bandiere
 
 $(document).ready(function () {
 
     //dati interfaccia
-    var wrapper = $('.films__wrapper');
-    var sourceTemplate = $('#film__template').html();
-    var input = $('#search');
+    var wrapper = $('.films__wrapper'),
+        wrapperError = $('.alert'),
+        sourceTemplate = $('#film__template').html(),
+        input = $('#search'),
+        select = $('#select-language');
 
-    //dati interfaccia
-    var wrapperDetails = $('.film__details');
-    var sourceTemplateDetails = $('#film__details').html();
+    //dati interfaccia details
+    var wrapperDetails = $('.film__details'),
+        sourceTemplateDetails = $('#film__details').html();
 
+
+    //click su invio faccio ricerca
     $(document).keyup(function(e){
       if(e.which == 13){
         //dati da utente
         query = input.val();
+        //controllo lingua scelta
+        languageLabel = selectLanguage(select);
+
         getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate);
-        wrapper.html('');
-        wrapperDetails.removeClass('active');
+        wrapperError.removeClass('active');
+
+        //svuoto wrapper
+        deleteContainer(wrapper, '');
+        deleteContainer(wrapperDetails, 'active');
       }
     });
 
@@ -54,12 +63,14 @@ $(document).ready(function () {
         wrapperDetails.css('left', 0);
       });
 
+      //richiamo di dettagli del film/telefim richiesto
       getDetails(apiKey, languageLabel, type, id, wrapperDetails, sourceTemplateDetails);
     });
 
   });
 
 function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate){
+
   var apiKey = apiKey,
       urlApi = urlApi,
       query = query,
@@ -82,16 +93,19 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
           },
           success: function (data) {
             var result = data;
-            //controllo se sono state generate delle card
-            var listResult = $('.film__card').length;
 
-            //se il risultato è zero faccio chiamata per template
+            //controllo se sono state generate delle card
+            var filmCardLength = $('.film__card').length;
+
+            //se il risultato è maggiore di zero faccio chiamata per template
             if(result.total_results > 0){
               printData(result, query, urlImg, languageLabel, wrapper, sourceTemplate);
             }
             //se non ci sono risultati e non ci sono card mando errore
-            else if (result.total_results == 0 && listResult == 0){
-              noResult(wrapper);
+            else if (result.total_results == 0 && filmCardLength == 0){
+              var wrapperError = $('.alert');
+              wrapperError.addClass('active');
+              noResult(wrapperError);
             }
           },
           error: function (err) {
@@ -109,6 +123,7 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
       wrapper = wrapper,
       sourceTemplate   = sourceTemplate,
       template  = Handlebars.compile(sourceTemplate),
+      //label per implementare seconda lingua intefaccia
       labels = {
           it: {
               'labelTitoloOriginale': 'Titolo originale',
@@ -189,11 +204,17 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
 
       var html = template(context);
 
-      if($('.film__card').length == 0){
+      var filmCardLength = $('.film__card').length;
+
+      if( filmCardLength == 0){
         wrapper.html(html);
       } else{
         wrapper.append(html);
       }
+
+}
+
+function deleteData(){
 
 }
 
@@ -208,9 +229,7 @@ function getFlags(language) {
     return flag;
 }
 
-function noResult(wrapper){
-  wrapper.html('La ricerca non ha dato risultati');
-}
+
 
 function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
   var apiKey = apiKey,
@@ -228,9 +247,13 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
       append_to_response: 'credits'
     },
     success: function (data) {
-      var result = data,
-          title = result.title,
-          cast = result.credits.cast,
+      var result = data;
+      if(result.title){
+        var title = result.title;
+      } else {
+        var title = result.name;
+      }
+      var cast = result.credits.cast,
           castLength = result.credits.cast.length,
           overview = result.overview,
           genres = result.genres,
@@ -253,9 +276,9 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
       printDetails(array, wrapper, sourceTemplate);
     },
     error: function (err) {
-      console.log(err);
       var wrapperError = $('.alert');
-      wrapperError.html('Non ci sono risultati');
+      wrapperError.addClass('active');
+      wrapperError.html('Si è verificato un errore di connessione');
     }
   });
 
@@ -265,20 +288,45 @@ function printDetails(array, wrapper, sourceTemplate){
   var array = array,
       wrapper = wrapper,
       sourceTemplate = sourceTemplate,
-      template = Handlebars.compile(sourceTemplate);
-      var context = array;
-
-      var html = template(context);
-
-      wrapper.html(html);
-      closeDetails(wrapper);
+      template = Handlebars.compile(sourceTemplate),
+      context = array,
+      html = template(context);
+      if(Object.keys(context).length > 0){
+        //aggiungo contenuto
+        wrapper.html(html);
+        closeDetails(wrapper);
+      } else {
+        noResult(wrapper);
+        closeDetails(wrapper);
+      }
 }
 
+function deleteContainer(wrapper, classToRemove){
+  var wrapper = wrapper,
+      classToRemove = classToRemove;
+
+  wrapper.html('');
+  wrapper.removeClass(classToRemove);
+}
+
+//funzione per aggiungere funzionalità pulsante di chiusura
 function closeDetails(wrapper){
   var wrapper = wrapper,
       closeBtn = wrapper.find('.details__close');
 
   closeBtn.click(function(){
-    wrapper.removeClass('active');
+    deleteContainer(wrapper, 'active');
   });
+}
+
+//funzione per selezione lingua interfaccia
+//per future implementazioni
+function selectLanguage(select){
+  var select = select;
+  return select.val();
+}
+
+// funzione che ritorna in caso di assenza di risultati
+function noResult(wrapper){
+  wrapper.html('<p>La ricerca non ha dato risultati</p>');
 }
