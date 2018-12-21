@@ -18,9 +18,6 @@ $(document).ready(function () {
     var wrapperDetails = $('.film__details');
     var sourceTemplateDetails = $('#film__details').html();
 
-    //invio su input
-    //var submit = $('#button-film');
-    //var selectL = $('.lang-link.selected');
     $(document).keyup(function(e){
       if(e.which == 13){
         //dati da utente
@@ -28,7 +25,6 @@ $(document).ready(function () {
         getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate);
         wrapper.html('');
         wrapperDetails.removeClass('active');
-
       }
     });
 
@@ -44,22 +40,20 @@ $(document).ready(function () {
       var type = $(this).attr('data-type');
       var position = $(this).position();
 
-      $('html, body').animate({
-        scrollTop: position.top
-      }, 200, 'linear');
-
-      //aggiungere posizionamento fixed dopo animazione
-      
-      // $('html, body').animate({
-      //   scrollTop: position.top
-      // }, 2000, 'linear', function() {
-      //   wrapperDetails.css('position', 'fixed');
-      //   // Animation complete.
-      // });
-
+      //animazione
       wrapperDetails.addClass('active');
       wrapperDetails.css('top', position.top);
       wrapperDetails.css('left', 0);
+
+      $('html, body').animate({
+        scrollTop: position.top
+      }, 200, 'linear', function() {
+        //alla fine dell'animazione l'overlay si posiziona fixed
+        wrapperDetails.css('position', 'fixed');
+        wrapperDetails.css('top', 0);
+        wrapperDetails.css('left', 0);
+      });
+
       getDetails(apiKey, languageLabel, type, id, wrapperDetails, sourceTemplateDetails);
     });
 
