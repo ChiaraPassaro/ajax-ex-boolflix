@@ -134,10 +134,12 @@ header{
 .details__wrapper{
   padding: 10px;
   position: relative;
+  height: 80%;
   width: 50%;
   margin: auto;
   background: #fff;
   border: 3px solid red;
+  overflow-y: auto;
 }
 .details__close{
   padding: 5px;
