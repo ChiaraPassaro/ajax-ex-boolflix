@@ -99,10 +99,13 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
 
             //se il risultato è maggiore di zero faccio chiamata per template
             if(result.total_results > 0){
+              console.log('i risultati sono maggiori di' + filmCardLength);
               printData(result, query, urlImg, languageLabel, wrapper, sourceTemplate);
             }
             //se non ci sono risultati e non ci sono card mando errore
             else if (result.total_results == 0 && filmCardLength == 0){
+              console.log('secondo giro' + result.total_results +' ' + filmCardLength);
+
               var wrapperError = $('.alert');
               wrapperError.addClass('active');
               noResult(wrapperError);
@@ -205,8 +208,10 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
       var html = template(context);
 
       var filmCardLength = $('.film__card').length;
+      var wrapperError = $('.alert');
 
       if( filmCardLength == 0){
+        deleteContainer(wrapperError, 'active');
         wrapper.html(html);
       } else{
         wrapper.append(html);
