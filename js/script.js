@@ -211,6 +211,7 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
       var wrapperError = $('.alert');
 
       if( filmCardLength == 0){
+        //svuoto alert se ci sono errori
         deleteContainer(wrapperError, 'active');
         wrapper.html(html);
       } else{
