@@ -4,7 +4,7 @@ var apiKey = 'f45eed1b51907eec504d83c2a1f86cae',
     urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages',
     urlImg = 'https://image.tmdb.org/t/p/w342',
     languageLabel = 'it', //lingua base interfaccia
-    lingueAmmesse = ['it', 'en', 'es']; // per le bandiere
+    languagesAllowed = ['it', 'en', 'es']; // per le bandiere
 
 $(document).ready(function () {
 
@@ -45,9 +45,9 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.film__card', function(){
-      var id = $(this).attr('data-idCard');
-      var type = $(this).attr('data-type');
-      var position = $(this).position();
+      var id = $(this).attr('data-idCard'),
+          type = $(this).attr('data-type'),
+          position = $(this).position();
 
       //animazione
       wrapperDetails.addClass('active');
@@ -69,6 +69,7 @@ $(document).ready(function () {
 
   });
 
+//Funzione che prende dati da Api
 function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTemplate){
 
   var apiKey = apiKey,
@@ -79,9 +80,10 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
       wrapper = wrapper,
       sourceTemplate = sourceTemplate;
 
+      //Ciclo per ogni urlApi inserita
       for (var i = 0; i < urlApi.length; i++) {
-        var count = i;
-        var thisUrl = urlApi[i];
+        var count = i,
+            thisUrl = urlApi[i];
 
         $.ajax({
           url: thisUrl,
@@ -91,7 +93,7 @@ function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, sourceTe
             language: languageLabel,
             query: query
           },
-          success: function (data) {
+          success: function(data) {
             var result = data;
 
             //controllo se sono state generate delle card
@@ -142,24 +144,20 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
               'labelVoto': 'Vote average',
               'labelType': 'Type'
           }
-      };
-
-      var filmsArray = arrayApi.results;
-
-      var context = {
+      },
+      filmsArray = arrayApi.results,
+      context = {
           querySearch : query,
           films: []
-      };
-
-      var i = 0;
+      },
+      i = 0;
 
       while (i < filmsArray.length){
-          var thisFilm = filmsArray[i];
-
+          var thisFilm = filmsArray[i],
           // trasformo il voto da numero decimale a intero e da 1 a 10 a 1 a 5
-          var filmVote = Math.ceil(thisFilm.vote_average / 2);
-          var maxStars = 5;
-          var filmStar = [];
+              filmVote = Math.ceil(thisFilm.vote_average / 2),
+              maxStars = 5,
+              filmStar = [];
 
           //creo un array con le stelle
           for (var j = 0; j < maxStars; j++) {
@@ -171,16 +169,16 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
           }
 
           if(thisFilm.original_title){
-            var originalTitle = thisFilm.original_title;
-            var filmTitle = thisFilm.title;
-            var type = 'film';
-            var typeUrl = 'movie'
+            var originalTitle = thisFilm.original_title,
+              filmTitle = thisFilm.title,
+              type = 'film',
+              typeUrl = 'movie';
           }
           if(thisFilm.original_name){
-            var originalTitle = thisFilm.original_name;
-            var filmTitle = thisFilm.name;
-            var type = 'Tv Series';
-            var typeUrl = 'tv'
+            var originalTitle = thisFilm.original_name,
+                filmTitle = thisFilm.name,
+                type = 'Tv Series',
+                typeUrl = 'tv';
           }
           if (thisFilm.poster_path){
             var poster = urlImg + thisFilm.poster_path;
@@ -205,10 +203,9 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, sourceTempla
             i++;
       }
 
-      var html = template(context);
-
-      var filmCardLength = $('.film__card').length;
-      var wrapperError = $('.alert');
+      var html = template(context),
+          filmCardLength = $('.film__card').length,
+          wrapperError = $('.alert');
 
       if( filmCardLength == 0){
         //svuoto alert se ci sono errori
@@ -227,7 +224,7 @@ function deleteData(){
 //funzione che cerca bandiere
 function getFlags(language) {
     var flag = '';
-    if (lingueAmmesse.includes(language)) {
+    if (languagesAllowed.includes(language)) {
       flag = '<img src="img/' + language + '.png">';
     } else {
       flag = language + ' Lingua non disponibile';
@@ -254,11 +251,13 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
     },
     success: function (data) {
       var result = data;
+
       if(result.title){
         var title = result.title;
       } else {
         var title = result.name;
       }
+
       var cast = result.credits.cast,
           castLength = result.credits.cast.length,
           overview = result.overview,
@@ -273,11 +272,13 @@ function getDetails(apiKey, language, type, id, wrapper, sourceTemplate){
 
           console.log(cast);
       for (var i = 0; i < maxCharacters; i++) {
+
         if(i < castLength){
           var thisCharacter = cast[i].character;
           var thisActor = cast[i].name;
           array['characters'].push({character: thisCharacter, actor: thisActor});
         }
+
       }
       printDetails(array, wrapper, sourceTemplate);
     },
@@ -297,6 +298,7 @@ function printDetails(array, wrapper, sourceTemplate){
       template = Handlebars.compile(sourceTemplate),
       context = array,
       html = template(context);
+
       if(Object.keys(context).length > 0){
         //aggiungo contenuto
         wrapper.html(html);
