@@ -199,6 +199,8 @@ function printData(aApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperErro
       },
       i = 0;
 
+
+  //per ogni film creo la scheda
   while (i < aFilms.length) {
     var oThisFilm = aFilms[i],
         // trasformo il voto da numero decimale a intero e da 1 a 10 a 1 a 5
@@ -206,7 +208,7 @@ function printData(aApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperErro
         maxStars = 5,
         aFilmStar = [];
 
-    //creo un array con le stelle
+    //creo un array per le stelle
     for (var j = 0; j < maxStars; j++) {
       if (j < nFilmVote) {
         aFilmStar.push({
@@ -233,9 +235,12 @@ function printData(aApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperErro
           sType = 'Tv Series',
           sTypeUrl = 'tv';
     }
+    // se c'è il poster
     if (oThisFilm.poster_path) {
       var sPoster = sUrlImg + oThisFilm.poster_path;
     }
+
+    //Iserisco in oContext i dati da passare ad Handlebars
     oContext['films'][i] = {
       labelTitoloOriginale: oLabels[sLanguageLabel].labelTitoloOriginale,
       labelAnnoUscita: oLabels[sLanguageLabel].labelAnnoUscita,
