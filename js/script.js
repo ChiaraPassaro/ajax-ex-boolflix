@@ -1,40 +1,48 @@
+/*****
+  s - string
+  a - array
+  $ - jQuery element
+  n - number
+  o - object
+******/
+
 //Dati Api
-var apiKey = 'f45eed1b51907eec504d83c2a1f86cae',
-    urlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themoviedb.org/3/search/tv'],
-    urlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages',
-    urlImg = 'https://image.tmdb.org/t/p/w342',
-    languageLabel = 'it', //lingua base interfaccia
-    languagesAllowed = ['it', 'en', 'es']; // per le bandiere
+var sApiKey = 'f45eed1b51907eec504d83c2a1f86cae',
+    aUrlApi = ['https://api.themoviedb.org/3/search/movie', 'https://api.themoviedb.org/3/search/tv'],
+    sUrlApiLanguages = 'https://api.themoviedb.org/3/configuration/languages',
+    sUrlImg = 'https://image.tmdb.org/t/p/w342',
+    sLanguageLabel = 'it', //lingua base interfaccia
+    aLanguagesAllowed = ['it', 'en', 'es']; // per le bandiere
 
 $(document).ready(function() {
 
   //dati interfaccia
-  var wrapper = $('.films__wrapper'),
-      wrapperError = $('.alert'),
-      sourceTemplate = $('#film__template').html(),
-      input = $('#search'),
-      select = $('#select-language');
+  var $wrapper = $('.films__wrapper'),
+      $wrapperError = $('.alert'),
+      $sourceTemplate = $('#film__template').html(),
+      $input = $('#search'),
+      $select = $('#select-language');
 
   //dati interfaccia details
-  var wrapperDetails = $('.film__details'),
-    sourceTemplateDetails = $('#film__details').html();
+  var $wrapperDetails = $('.film__details'),
+      $sourceTemplateDetails = $('#film__details').html();
 
 
   //click su invio faccio ricerca
   $(document).keyup(function(e) {
     if (e.which == 13) {
       //dati da utente
-      query = input.val();
+      sQuery = $input.val();
       //controllo lingua scelta
-      languageLabel = selectLanguage(select);
+      sLanguageLabel = selectLanguage($select);
 
-      wrapperError.removeClass('active');
+      $wrapperError.removeClass('active');
 
       //svuoto wrapper
-      deleteContainer(wrapper, '');
-      deleteContainer(wrapperDetails, 'active');
+      deleteContainer($wrapper, '');
+      deleteContainer($wrapperDetails, 'active');
 
-      getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, wrapperError, sourceTemplate);
+      getData(sApiKey, aUrlApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperError, $sourceTemplate);
     }
   });
 
@@ -46,133 +54,128 @@ $(document).ready(function() {
   });
 
   $(document).on('click', '.film__card', function() {
-    var id = $(this).attr('data-idCard'),
-        type = $(this).attr('data-type'),
-        position = $(this).position();
+    var $Id = $(this).attr('data-idCard'),
+        $Type = $(this).attr('data-type'),
+        $Position = $(this).position();
 
     //animazione
-    wrapperDetails.addClass('active');
-    wrapperDetails.css('top', position.top);
-    wrapperDetails.css('left', 0);
+    $wrapperDetails.addClass('active');
+    $wrapperDetails.css('top', $Position.top);
+    $wrapperDetails.css('left', 0);
 
     $('html, body').animate({
-      scrollTop: position.top
+      scrollTop: $Position.top
     }, 200, 'linear', function() {
       //alla fine dell'animazione l'overlay si posiziona fixed
-      wrapperDetails.css('position', 'fixed');
-      wrapperDetails.css('top', 0);
-      wrapperDetails.css('left', 0);
+      $wrapperDetails.css('position', 'fixed');
+      $wrapperDetails.css('top', 0);
+      $wrapperDetails.css('left', 0);
     });
 
     //richiamo di dettagli del film/telefim richiesto
-    getDetails(apiKey, languageLabel, type, id, wrapperDetails, sourceTemplateDetails);
+    getDetails(sApiKey, sLanguageLabel, $Type, $Id, $wrapperDetails, $wrapperError, $sourceTemplateDetails);
   });
 
 });
 
 //Funzione ricorsiva che prende dati da Api
-function getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, wrapperError, sourceTemplate, isFirstQuery, count, prevNumberResult, dataPrev) {
+function getData(sApiKey, aUrlApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperError, $sourceTemplate, isFirstQuery, nCount, aPrevNumberResult, oDataPrev) {
 
-  var apiKey = apiKey,
-      urlApi = urlApi,
-      query = query,
-      urlImg = urlImg,
-      languageLabel = languageLabel,
-      wrapper = wrapper,
-      wrapperError = wrapperError,
-      sourceTemplate = sourceTemplate,
+  var sApiKey = sApiKey,
+      aUrlApi = aUrlApi,
+      sQuery = sQuery,
+      sUrlImg = sUrlImg,
+      sLanguageLabel = sLanguageLabel,
+      $wrapper = $wrapper,
+      $wrapperError = $wrapperError,
+      $sourceTemplate = $sourceTemplate,
       isFirstQuery = isFirstQuery || false,
-      count = count || 0,
-      prevResult = [],
-      data = dataPrev || false;
+      nCount = nCount || 0,
+      aPrevResult = [],
+      oData = oDataPrev || false;
 
   //se risultati precedenti passo array
-  if (prevNumberResult) {
-    prevResult = prevNumberResult;
+  if (aPrevNumberResult) {
+    aPrevResult = aPrevNumberResult;
   } else {
     //altrimenti 0
-    prevResult.push(0);
+    aPrevResult.push(0);
   }
 
   //se la funzione e' stata gia' chiamata e il risultato precedente e' 0
-  if (prevResult[count] == 0 && count > 1) {
+  if (aPrevResult[nCount] == 0 && nCount > 1) {
 
     // se tutti gli elementi dell'array sono uguali a 0 ritorno true
-    var noResults = prevResult.reduce(function(accumulator, currentValue, currentIndex, array) {
-      if (array[currentIndex - 1] === currentValue && currentValue === 0) {
-        return true;
-      } else {
-        return false;
-      }
-    }, 0);
+    var hasResults = aPrevResult.every(function (value) {
+      return value === 0;
+    });
 
     //se nessun risultato precedente
-    if (noResults) {
-      noResult(wrapperError);
+    if (hasResults) {
+      notResult($wrapperError, sLanguageLabel);
     } else {
       //altrimenti stampo
-      printData(data, query, urlImg, languageLabel, wrapper, wrapperError, sourceTemplate, isFirstQuery, prevResult);
+      printData(oData, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperError, $sourceTemplate, isFirstQuery, aPrevResult);
     }
 
   }
 
-  // se i risultati precedenti sono diversi da 0 stampo vale anche per la prima chiamata
-  else if (prevResult[count] != 0) {
-    printData(data, query, urlImg, languageLabel, wrapper, wrapperError, sourceTemplate, isFirstQuery, prevResult);
+  // se i risultati precedenti sono diversi da 0 stampo - vale anche per la prima chiamata
+  else if (aPrevResult[nCount] != 0) {
+    printData(oData, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperError, $sourceTemplate, isFirstQuery, aPrevResult);
   }
 
   //se count e' inferiore alla lunghezza dell'array chiamata ajax - simulo ciclo
-  if (count < urlApi.length) {
-    var thisUrl = urlApi[count];
-        queryData = {
-          api_key: apiKey,
-          language: languageLabel,
-          query: query
+  if (nCount < aUrlApi.length) {
+    var sThisUrl = aUrlApi[nCount];
+        oQueryData = {
+          api_key: sApiKey,
+          language: sLanguageLabel,
+          query: sQuery
         };
 
     // se prima query
     // chiamata ajax 1
-    if (count == 0) {
+    if (nCount == 0) {
       isFirstQuery = true;
     } else {
       isFirstQuery = false;
     }
 
     $.ajax({
-      url: thisUrl,
+      url: sThisUrl,
       method: 'GET',
-      data: queryData,
-      success: function(data) {
+      data: oQueryData,
+      success: function(oData) {
         //conservo numero risultati in array
-        var numberResult = data.total_results;
-        prevResult.push(numberResult);
+        var nResult = oData.total_results;
+        aPrevResult.push(nResult);
 
         //aumento counter
-        count++;
+        nCount++;
         //richiamo la funzione stessa
-        return getData(apiKey, urlApi, query, urlImg, languageLabel, wrapper, wrapperError, sourceTemplate, isFirstQuery, count, prevResult, data);
+        return getData(sApiKey, aUrlApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperError, $sourceTemplate, isFirstQuery, nCount, aPrevResult, oData);
       },
       error: function(err) {
-        noResult(wrapperError);
+        errorAjax($wrapperError, err);
       }
     });
   }
 }
 
 //Funzione che stampa dati
-function printData(arrayApi, query, urlImg, languageLabel, wrapper, wrapperError, sourceTemplate, isFirstQuery, prevResult) {
-  var arrayApi = arrayApi,
-      query = query,
-      urlImg = urlImg,
-      languageLabel = languageLabel,
-      wrapper = wrapper,
-      wrapperError = wrapperError,
-      sourceTemplate = sourceTemplate,
-      template = Handlebars.compile(sourceTemplate),
+function printData(aApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperError, $sourceTemplate, isFirstQuery, aPrevResult) {
+  var aApi = aApi,
+      sQuery = sQuery,
+      sUrlImg = sUrlImg,
+      sLanguageLabel = sLanguageLabel,
+      $wrapper = $wrapper,
+      $wrapperError = $wrapperError,
+      $sourceTemplate = $sourceTemplate,
       isFirstQuery = isFirstQuery || false,
-      prevResult = prevResult,
+      aPrevResult = aPrevResult,
       //label per implementare seconda lingua intefaccia
-      labels = {
+      oLabels = {
         it: {
           'labelTitoloOriginale': 'Titolo originale',
           'labelAnnoUscita': 'Anno di Uscita',
@@ -188,66 +191,67 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, wrapperError
           'labelType': 'Type'
         }
       },
-      filmsArray = arrayApi.results,
+      aFilms = aApi.results,
+      template = Handlebars.compile($sourceTemplate),
       context = {
-        querySearch: query,
+        querySearch: sQuery,
         films: []
       },
       i = 0;
 
-  while (i < filmsArray.length) {
-    var thisFilm = filmsArray[i],
+  while (i < aFilms.length) {
+    var oThisFilm = aFilms[i],
         // trasformo il voto da numero decimale a intero e da 1 a 10 a 1 a 5
-        filmVote = Math.ceil(thisFilm.vote_average / 2),
+        nFilmVote = Math.ceil(oThisFilm.vote_average / 2),
         maxStars = 5,
-        filmStar = [];
+        aFilmStar = [];
 
     //creo un array con le stelle
     for (var j = 0; j < maxStars; j++) {
-      if (j < filmVote) {
-        filmStar.push({
+      if (j < nFilmVote) {
+        aFilmStar.push({
           star: true
         });
       } else {
-        filmStar.push({
+        aFilmStar.push({
           star: false
         });
       }
     }
 
     //Se film original_title
-    if (thisFilm.original_title) {
-      var originalTitle = thisFilm.original_title,
-          filmTitle = thisFilm.title,
-          type = 'film',
-          typeUrl = 'movie';
+    if (oThisFilm.original_title) {
+      var sOriginalTitle = oThisFilm.original_title,
+          sFilmTitle = oThisFilm.title,
+          sType = 'film',
+          sTypeUrl = 'movie';
     }
     //se serie tv original_name
-    if (thisFilm.original_name) {
-      var originalTitle = thisFilm.original_name,
-          filmTitle = thisFilm.name,
-          type = 'Tv Series',
-          typeUrl = 'tv';
+    if (oThisFilm.original_name) {
+      var sOriginalTitle = oThisFilm.original_name,
+          sFilmTitle = oThisFilm.name,
+          sType = 'Tv Series',
+          sTypeUrl = 'tv';
     }
-    if (thisFilm.poster_path) {
-      var poster = urlImg + thisFilm.poster_path;
+    if (oThisFilm.poster_path) {
+      var sPoster = sUrlImg + oThisFilm.poster_path;
     }
     context['films'][i] = {
-      labelTitoloOriginale: labels[languageLabel].labelTitoloOriginale,
-      labelAnnoUscita: labels[languageLabel].labelAnnoUscita,
-      labelLingua: labels[languageLabel].labelLingua,
-      labelVoto: labels[languageLabel].labelVoto,
-      labelType: labels[languageLabel].labelType,
-      filmTitle: filmTitle,
-      filmOverview: thisFilm.overview,
-      originalTitle: originalTitle,
-      filmYear: thisFilm.release_date,
-      filmLanguage: getFlags(thisFilm.original_language),
-      stars: filmStar,
-      type: type,
-      filmPoster: poster,
-      id: thisFilm.id,
-      typeUrl: typeUrl
+      labelTitoloOriginale: oLabels[sLanguageLabel].labelTitoloOriginale,
+      labelAnnoUscita: oLabels[sLanguageLabel].labelAnnoUscita,
+      labelLingua: oLabels[sLanguageLabel].labelLingua,
+      labelVoto: oLabels[sLanguageLabel].labelVoto,
+      labelType: oLabels[sLanguageLabel].labelType,
+      filmTitle: sFilmTitle,
+      filmOverview: oThisFilm.overview,
+      originalTitle: sOriginalTitle,
+      filmYear: oThisFilm.release_date,
+      filmLanguage: getFlags(oThisFilm.original_language),
+      stars: aFilmStar,
+      type: sType,
+      filmPoster: sPoster,
+      id: oThisFilm.id,
+      typeUrl: sTypeUrl
     };
     i++;
   }
@@ -257,131 +261,147 @@ function printData(arrayApi, query, urlImg, languageLabel, wrapper, wrapperError
   //se prima query
   if (isFirstQuery) {
     //svuoto alert se ci sono errori
-    deleteContainer(wrapperError, 'active');
+    deleteContainer($wrapperError, 'active');
     //sostituisco html
-    wrapper.html(html);
+    $wrapper.html(html);
   } else {
     //appendo risultati
-    wrapper.append(html);
+    $wrapper.append(html);
   }
 
 }
 
 //funzione che cerca bandiere
-function getFlags(language) {
+function getFlags(sLanguage) {
   var flag = '';
-  if (languagesAllowed.includes(language)) {
-    flag = '<img src="img/' + language + '.png">';
+  if (aLanguagesAllowed.includes(sLanguage)) {
+    flag = '<img src="img/' + sLanguage + '.png">';
   } else {
-    flag = language + ' Lingua non disponibile';
+    flag = sLanguage + ' Lingua non disponibile';
   }
   return flag;
 }
 
-function getDetails(apiKey, language, type, id, wrapper, sourceTemplate) {
-  var apiKey = apiKey,
-      language = language,
-      type = type,
-      url = 'https://api.themoviedb.org/3/' + type + '/' + id,
-      wrapper = wrapper;
+function getDetails(sApiKey, sLanguage, $Type, id, $wrapper, $wrapperError, $sourceTemplate) {
+  var sApiKey = sApiKey,
+      sLanguage = sLanguage,
+      $Type = $Type,
+      sUrl = 'https://api.themoviedb.org/3/' + $Type + '/' + id,
+      $wrapper = $wrapper,
+      $wrapperError = $wrapperError;
 
   $.ajax({
-    url: url,
+    url: sUrl,
     method: 'GET',
     data: {
-      api_key: apiKey,
-      language: language,
+      api_key: sApiKey,
+      language: sLanguage,
       append_to_response: 'credits'
     },
-    success: function(data) {
-      var result = data;
+    success: function(oData) {
+      var oResult = oData;
 
-      if (result.title) {
-        var title = result.title;
+      if (oResult.title) {
+        var sTitle = oResult.title;
       } else {
-        var title = result.name;
+        var sTitle = oResult.name;
       }
 
-      var cast = result.credits.cast,
-        castLength = result.credits.cast.length,
-        overview = result.overview,
-        genres = result.genres,
-        maxCharacters = 5,
-        array = {
-          title: title,
-          overview: overview,
-          genres: genres,
-          characters: []
-        };
+      var oCast = oResult.credits.cast,
+          nCastLength = oResult.credits.cast.length,
+          sOverview = oResult.overview,
+          aGenres = oResult.genres,
+          maxCharacters = 5,
+          oFilm = {
+            title: sTitle,
+            overview: sOverview,
+            genres: aGenres,
+            characters: []
+          };
 
       for (var i = 0; i < maxCharacters; i++) {
 
-        if (i < castLength) {
-          var thisCharacter = cast[i].character;
-          var thisActor = cast[i].name;
-          array['characters'].push({
-            character: thisCharacter,
-            actor: thisActor
+        if (i < nCastLength) {
+          var sThisCharacter = oCast[i].character;
+          var sThisActor = oCast[i].name;
+          oFilm['characters'].push({
+            character: sThisCharacter,
+            actor: sThisActor
           });
         }
 
       }
-      printDetails(array, wrapper, sourceTemplate);
+      printDetails(oFilm, $wrapper, $sourceTemplate, sLanguage);
     },
     error: function(err) {
-      var wrapperError = $('.alert');
-      wrapperError.addClass('active');
-      wrapperError.html('Si è verificato un errore di connessione');
+        errorAjax($wrapperError, err);
     }
   });
 
 }
 
-function printDetails(array, wrapper, sourceTemplate) {
-  var array = array,
-      wrapper = wrapper,
-      sourceTemplate = sourceTemplate,
-      template = Handlebars.compile(sourceTemplate),
-      context = array,
-      html = template(context);
+function printDetails(obj, $wrapper, $sourceTemplate, sLanguage) {
+  var oContext = obj,
+      sLanguage = sLanguage,
+      $wrapper = $wrapper,
+      $sourceTemplate = $sourceTemplate,
+      template = Handlebars.compile($sourceTemplate),
+      html = template(oContext);
 
-  if (Object.keys(context).length > 0) {
-    //aggiungo contenuto
-    wrapper.html(html);
-    closeDetails(wrapper);
+  //Controllo che l'oggetto contenga qualcosa
+  if (Object.keys(oContext).length > 0) {
+    //se ci sono risultati aggiungo contenuto
+    $wrapper.html(html);
+    closeDetails($wrapper);
   } else {
-    noResult(wrapper);
-    closeDetails(wrapper);
+    notResult($wrapper, sLanguage);
+    closeDetails($wrapper);
   }
 }
 
-function deleteContainer(wrapper, classToRemove) {
-  var wrapper = wrapper,
-    classToRemove = classToRemove;
+function deleteContainer($wrapper, sClassToRemove) {
+  var $wrapper = $wrapper,
+      sClassToRemove = sClassToRemove;
 
-  wrapper.html('');
-  wrapper.removeClass(classToRemove);
+  $wrapper.html('');
+  $wrapper.removeClass(sClassToRemove);
 }
 
 //funzione per aggiungere funzionalità pulsante di chiusura
-function closeDetails(wrapper) {
-  var wrapper = wrapper,
-    closeBtn = wrapper.find('.details__close');
+function closeDetails($wrapper) {
+  var $wrapper = $wrapper,
+      $closeBtn = $wrapper.find('.details__close');
 
-  closeBtn.click(function() {
-    deleteContainer(wrapper, 'active');
+  $closeBtn.click(function() {
+    deleteContainer($wrapper, 'active');
   });
+}
+
+// funzione che ritorna in caso di assenza di risultati
+function notResult($wrapper, sLanguage) {
+  var $wrapper = $wrapper,
+      sLanguage = sLanguage,
+      sMessage = '';
+
+  if (sLanguage == 'it') {
+    sMessage = 'La ricerca non ha dato risultati';
+  } else {
+    sMessage = 'Your search returned no results';
+  }
+  $wrapper.html('<p>' + sMessage + '</p>');
+  $wrapper.addClass('active');
+}
+
+// funzione che ritorna in caso di errore
+function errorAjax($wrapper, err) {
+  console.log(err);
+  $wrapper.html('<p>Errore di connessione</p>');
+  $wrapper.addClass('active');
 }
 
 //funzione per selezione lingua interfaccia
 //per future implementazioni
-function selectLanguage(select) {
-  var select = select;
-  return select.val();
-}
-
-// funzione che ritorna in caso di assenza di risultati
-function noResult(wrapper) {
-  wrapper.html('<p>La ricerca non ha dato risultati</p>');
-  wrapper.addClass('active');
+function selectLanguage($select) {
+  var $select = $select;
+  return $select.val();
 }
