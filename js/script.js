@@ -193,7 +193,7 @@ function printData(aApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperErro
       },
       aFilms = aApi.results,
       template = Handlebars.compile($sourceTemplate),
-      context = {
+      oContext = {
         querySearch: sQuery,
         films: []
       },
@@ -236,7 +236,7 @@ function printData(aApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperErro
     if (oThisFilm.poster_path) {
       var sPoster = sUrlImg + oThisFilm.poster_path;
     }
-    context['films'][i] = {
+    oContext['films'][i] = {
       labelTitoloOriginale: oLabels[sLanguageLabel].labelTitoloOriginale,
       labelAnnoUscita: oLabels[sLanguageLabel].labelAnnoUscita,
       labelLingua: oLabels[sLanguageLabel].labelLingua,
@@ -256,7 +256,7 @@ function printData(aApi, sQuery, sUrlImg, sLanguageLabel, $wrapper, $wrapperErro
     i++;
   }
 
-  var html = template(context);
+  var html = template(oContext);
 
   //se prima query
   if (isFirstQuery) {
